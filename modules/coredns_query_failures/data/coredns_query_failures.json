@@ -1,0 +1,190 @@
+{
+  "name": "coredns_query_failures",
+  "description": "CoreDNS Query Failures is an incident type that indicates that there is an issue with the CoreDNS service which is responsible for resolving DNS queries in a system. This incident can occur due to various reasons such as network connectivity issues, DNS misconfiguration, or a bug in the CoreDNS software itself. When this incident happens, users may experience difficulties accessing services or websites that rely on DNS resolution. Troubleshooting this incident requires identifying the root cause and implementing a solution to resolve the issue and restore normal functionality.",
+  "params": [
+    {
+      "name": "DNS_SERVER_IP",
+      "value": ""
+    },
+    {
+      "name": "NAMESPACE",
+      "value": ""
+    },
+    {
+      "name": "COREDNS_CONFIGMAP_NAME",
+      "value": ""
+    },
+    {
+      "name": "POD_NAME",
+      "value": ""
+    },
+    {
+      "name": "COREDNS_DEPLOYMENT_NAME",
+      "value": ""
+    },
+    {
+      "name": "COREDNS_POD_NAME",
+      "value": ""
+    },
+    {
+      "name": "DOMAIN_NAME",
+      "value": ""
+    },
+    {
+      "name": "K8S_CLUSTER_NAME",
+      "value": ""
+    }
+  ],
+  "cells": [
+    {
+      "name": "cell_1",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## CoreDNS Query Failures\nCoreDNS Query Failures is an incident type that indicates that there is an issue with the CoreDNS service which is responsible for resolving DNS queries in a system. This incident can occur due to various reasons such as network connectivity issues, DNS misconfiguration, or a bug in the CoreDNS software itself. When this incident happens, users may experience difficulties accessing services or websites that rely on DNS resolution. Troubleshooting this incident requires identifying the root cause and implementing a solution to resolve the issue and restore normal functionality."
+    },
+    {
+      "name": "cell_2",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Next Step"
+    },
+    {
+      "name": "cell_3",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "pod | k8s_cluster_name=$K8S_CLUSTER_NAME | app='shoreline' | random=1 | limit=1 | invoke_get_pods_kubesys()"
+    },
+    {
+      "name": "cell_4",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check logs of CoreDNS pods for errors or failures"
+    },
+    {
+      "name": "cell_5",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "pod | k8s_cluster_name=$K8S_CLUSTER_NAME | app='shoreline' | limit=1 | random=1 | `kubectl logs ${COREDNS_POD_NAME} -n kube-system`"
+    },
+    {
+      "name": "cell_6",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Get detailed information about the CoreDNS Deployment"
+    },
+    {
+      "name": "cell_7",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "pod | k8s_cluster_name=$K8S_CLUSTER_NAME | app='shoreline' | limit=1 | random=1 | `kubectl describe deployment coredns -n kube-system`"
+    },
+    {
+      "name": "cell_8",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check the status of the CoreDNS Service"
+    },
+    {
+      "name": "cell_9",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "pod | k8s_cluster_name=$K8S_CLUSTER_NAME | app='shoreline' | limit=1 | random=1 | `kubectl get svc coredns -n kube-system`"
+    },
+    {
+      "name": "cell_10",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check if the CoreDNS ConfigMap is correct"
+    },
+    {
+      "name": "cell_11",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "pod | k8s_cluster_name=$K8S_CLUSTER_NAME | app='shoreline' | limit=1 | random=1 | `kubectl describe configmap coredns -n kube-system`"
+    },
+    {
+      "name": "cell_12",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check if the Kubernetes DNS service is running"
+    },
+    {
+      "name": "cell_13",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "pod | k8s_cluster_name=$K8S_CLUSTER_NAME | app='shoreline' | limit=1 | random=1 | `kubectl get svc kube-dns -n kube-system`"
+    },
+    {
+      "name": "cell_14",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check if the Kubernetes DNS ConfigMap is correct"
+    },
+    {
+      "name": "cell_15",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "pod | k8s_cluster_name=$K8S_CLUSTER_NAME | app='shoreline' | limit=1 | random=1 | `kubectl describe cm coredns -n kube-system`"
+    },
+    {
+      "name": "cell_16",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check if the pod's DNS settings are correct"
+    },
+    {
+      "name": "cell_17",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE | name=$POD_NAME | `nslookup ${DOMAIN_NAME}`"
+    },
+    {
+      "name": "cell_18",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check if the DNS policy for the pod is set to the correct value"
+    },
+    {
+      "name": "cell_19",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "pod | k8s_cluster_name=$K8S_CLUSTER_NAME | app='shoreline' | limit=1 | random=1 | `kubectl describe pod ${POD_NAME} | grep DNS`"
+    },
+    {
+      "name": "cell_20",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check if there are any network connectivity issues"
+    },
+    {
+      "name": "cell_21",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE | name=$POD_NAME | `ping ${DOMAIN_NAME}`"
+    },
+    {
+      "name": "cell_22",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Restart the CoreDNS service: If the issue is isolated to the CoreDNS service, restarting the service may be enough to resolve the issue."
+    },
+    {
+      "name": "cell_23",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "pod | k8s_cluster_name=$K8S_CLUSTER_NAME | app='shoreline' | random=1 | limit=1 | invoke_restart_coredns($NAMESPACE, $POD_NAME)"
+    },
+    {
+      "name": "cell_24",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Verify DNS configuration: Ensure that the DNS configuration is correct and that the CoreDNS service is configured to use the correct DNS servers. Misconfiguration of DNS can cause query failures and lead to this incident type."
+    },
+    {
+      "name": "cell_25",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "pod | k8s_cluster_name=$K8S_CLUSTER_NAME | app='shoreline' | random=1 | limit=1 | invoke_dns_update($DNS_SERVER_IP, $COREDNS_CONFIGMAP_NAME, $COREDNS_DEPLOYMENT_NAME)"
+    }
+  ]
+}
